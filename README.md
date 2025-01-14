@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Oracle SpringBoot NextJS Project
 
 A comprehensive database management system integrating Oracle Database, Spring Boot, and Next.js.
@@ -104,3 +105,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Next.js team for the amazing framework
 - Spring Boot team for the robust backend framework
 - Oracle for the reliable database system
+=======
+# oracle-DBA_SpringBoot
+>>>>>>> e25a049412f2fdfa8cfcc2c785873a7be043bc0e
