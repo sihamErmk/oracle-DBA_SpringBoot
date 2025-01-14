@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMAN Backup</title>
+</head>
+<body>
+<h1>RMAN Backup Management</h1>
+
+<h2>Actions:</h2>
+<ul>
+    <li><a href="/api/rman/backup/full">Full Backup</a></li>
+    <li>
+        <form action="/api/rman/incremental-backup/0" method="post">
+            <button type="submit">Incremental Backup Level 0</button>
+        </form>
+    </li>
+    <li>
+        <form action="/api/rman/incremental-backup/1" method="post">
+            <button type="submit">Incremental Backup Level 1</button>
+        </form>
+    </li>
+    <li><a href="/api/rman/backups">View Backup History</a></li>
+    <li><a href="/api/rman/restore">Restore</a></li>
+</ul>
+
+<!-- Affichage des messages si disponibles -->
+<div th:if="${message}" th:text="${message}"></div>
+</body>
+</html>

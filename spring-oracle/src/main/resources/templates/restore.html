@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restore Backup</title>
+</head>
+<body>
+<h1>Restore Backup</h1>
+
+<div>
+    <a href="/">Back to Home</a>
+</div>
+
+<form action="/restore" method="post">
+    <button type="submit">Restore from Latest Backup</button>
+</form>
+
+<!-- Affichage des messages si disponibles -->
+<div th:if="${message}" th:text="${message}"></div>
+</body>
+</html>

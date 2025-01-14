@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup History</title>
+</head>
+<body>
+<h1>Backup History</h1>
+
+<div>
+    <a href="/">Back to Home</a>
+</div>
+
+<h2>List of Backups</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Backup ID</th>
+        <th>Backup Type</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="backup : ${backups}">
+        <tr>
+            <td th:text="${backup.id}"></td>
+            <td th:text="${backup.type}"></td>
+            <td th:text="${backup.date}"></td>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+</body>
+</html>

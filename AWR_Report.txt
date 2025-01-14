@@ -1,0 +1,132 @@
+AWR Report
+===============================
+Snapshot ID: 6
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 15:52:31.835
+Start Time: 2025-01-09 16:58:52.816
+End Time: 2025-01-09 17:58:40.844
+Flush Elapsed: 0 0:0:4.8
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 10
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 19:30:50.299
+Start Time: 2025-01-09 21:01:19.601
+End Time: 2025-01-09 21:58:12.265
+Flush Elapsed: 0 0:0:11.5
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 11
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 19:30:50.299
+Start Time: 2025-01-09 21:58:12.265
+End Time: 2025-01-09 22:58:13.266
+Flush Elapsed: 0 0:0:15.9
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 16
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 19:30:50.299
+Start Time: 2025-01-10 07:58:42.161
+End Time: 2025-01-10 08:58:32.107
+Flush Elapsed: 0 0:0:4.7
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 1
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 13:17:24.403
+Start Time: 2025-01-09 13:17:24.403
+End Time: 2025-01-09 13:27:53.785
+Flush Elapsed: 0 0:0:5.8
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 3
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 13:49:19.566
+Start Time: 2025-01-09 13:59:20.152
+End Time: 2025-01-09 14:58:11.11
+Flush Elapsed: 0 0:0:13.4
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 4
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 15:52:31.835
+Start Time: 2025-01-09 15:52:31.835
+End Time: 2025-01-09 16:03:07.732
+Flush Elapsed: 0 0:0:5.6
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 17
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 19:30:50.299
+Start Time: 2025-01-10 08:58:32.107
+End Time: 2025-01-10 09:58:27.355
+Flush Elapsed: 0 0:0:6.5
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 19
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 19:30:50.299
+Start Time: 2025-01-10 11:02:38.894
+End Time: 2025-01-10 11:58:29.849
+Flush Elapsed: 0 0:0:6.7
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
+Snapshot ID: 2
+Database ID: 1448739566
+Instance Number: 1
+Startup Time: 2025-01-09 13:49:19.566
+Start Time: 2025-01-09 13:49:19.566
+End Time: 2025-01-09 13:59:20.152
+Flush Elapsed: 0 0:0:5.1
+Snapshot Level: 1
+Error Count: 0
+Snapshot Flag: 0
+Snapshot Timezone: 0 0:0:0.0
+Container ID: 0
+
