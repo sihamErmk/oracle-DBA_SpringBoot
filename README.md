@@ -1,7 +1,7 @@
-<<<<<<< HEAD
-# Oracle SpringBoot NextJS Project
 
-A comprehensive database management system integrating Oracle Database, Spring Boot, and Next.js.
+# Oracle SpringBoot Angular Project
+
+A comprehensive database management system integrating Oracle Database, Spring Boot, and Angular.
 
 ## Core Features
 
@@ -12,12 +12,12 @@ A comprehensive database management system integrating Oracle Database, Spring B
 
 ## Technical Architecture
 
-### Frontend (Next.js 13.5)
+### Frontend (Angular)
 - Server-side rendering for optimal performance
-- Responsive dashboard with real-time updates using Recharts
+- Responsive dashboard with real-time updates using Ngcharts
 - Interactive data visualization components with Tailwind CSS
-- Secure authentication and authorization with NextAuth.js
-- Form validation using React Hook Form
+- Secure authentication and authorization 
+- Form validation 
 - Type-safe development with TypeScript
 
 ### Backend (Spring Boot)
@@ -37,36 +37,33 @@ A comprehensive database management system integrating Oracle Database, Spring B
 
 ## Prerequisites
 
-- Node.js 18+
+- Angular 18+
 - Java 17+
-- Oracle Database 19c+
+- Oracle Database 23ai
 - Maven 3.8+
 
 ## Getting Started
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/project-name.git
-   ```
 
-2. Configure Oracle Database:
+
+1. Configure Oracle Database:
     - Create a new database schema
     - Update `application.properties` with your database credentials
 
-3. Start Spring Boot backend:
+2. Start Spring Boot backend:
    ```bash
    cd backend
    mvn spring-boot:run
    ```
 
-4. Install frontend dependencies and start Next.js:
+3. Install frontend dependencies and start Angular:
    ```bash
    cd frontend
    npm install
-   npm run dev
+   ng serve
    ```
 
-5. Access the application at `http://localhost:3000`
+4. Access the application at `http://localhost:4200`
 
 ## Environment Variables
 
@@ -74,7 +71,7 @@ Create a `.env` file in the frontend directory:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:4200
 NEXTAUTH_SECRET=your-secret-key
 ```
 
@@ -87,24 +84,15 @@ NEXTAUTH_SECRET=your-secret-key
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add feature'`)
+4. Push to the branch (`git push origin feature/cc-feature`)
 5. Open a Pull Request
 
-## Contributors
 
-- [zachary013](https://github.com/zachary013) 
-- [Sam-jab](https://github.com/Sam-jab) 
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
-
-- Next.js team for the amazing framework
 - Spring Boot team for the robust backend framework
 - Oracle for the reliable database system
 =======
 # oracle-DBA_SpringBoot
->>>>>>> e25a049412f2fdfa8cfcc2c785873a7be043bc0e
+
