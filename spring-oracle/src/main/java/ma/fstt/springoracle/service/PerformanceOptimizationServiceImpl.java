@@ -132,8 +132,19 @@ public class PerformanceOptimizationServiceImpl implements PerformanceOptimizati
     }
 
     // Gather table statistics
+
+
     public void gatherTableStats(String schemaName, String tableName) {
-        String sql = """
+        // First verify the table exists
+        String verifySQL = "SELECT COUNT(*) FROM all_tables WHERE owner = ? AND table_name = ?";
+        int tableExists = jdbcTemplate.queryForObject(verifySQL, Integer.class, schemaName, tableName);
+
+        if (tableExists == 0) {
+            throw new RuntimeException("Table " + schemaName + "." + tableName + " does not exist");
+        }
+
+        try {
+            String sql = """
             BEGIN
                 DBMS_STATS.GATHER_TABLE_STATS(
                     ownname => ?,
@@ -144,8 +155,14 @@ public class PerformanceOptimizationServiceImpl implements PerformanceOptimizati
                 );
             END;
         """;
-        jdbcTemplate.update(sql, schemaName, tableName);
+            jdbcTemplate.update(sql, schemaName, tableName);
+        } catch (Exception e) {
+            log.error("Error gathering statistics for {}.{}: {}", schemaName, tableName, e.getMessage());
+            throw new RuntimeException("Error gathering table stats for " + schemaName + "." + tableName +
+                    ": " + e.getMessage(), e);
+        }
     }
+
 
     // Schedule statistics gathering job
     public void scheduleStatsGathering(String schemaName) {

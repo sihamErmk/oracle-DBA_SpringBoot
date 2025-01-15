@@ -4,6 +4,7 @@ package ma.fstt.springoracle.controller;
 import lombok.RequiredArgsConstructor;
 import ma.fstt.springoracle.service.PerformanceOptimizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 //import com.oracle.admin.service.PerformanceOptimizationService;
@@ -29,11 +30,18 @@ public class PerformanceOptimizationController {
     }
 
     @PostMapping("/gather-stats")
-    public ResponseEntity<Void> gatherTableStats(
+    public ResponseEntity<?> gatherTableStats(
             @RequestParam String schemaName,
             @RequestParam String tableName) {
-        performanceOptimizationService.gatherTableStats(schemaName, tableName);
-        return ResponseEntity.ok().build();
+        try {
+            performanceOptimizationService.gatherTableStats(schemaName, tableName);
+            return ResponseEntity.ok()
+                    .body(Map.of("message", "Statistics gathered successfully for " +
+                            schemaName + "." + tableName));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/schedule-stats")
