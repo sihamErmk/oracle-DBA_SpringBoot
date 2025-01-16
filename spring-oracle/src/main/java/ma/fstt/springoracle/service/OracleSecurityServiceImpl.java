@@ -10,10 +10,12 @@ import ma.fstt.springoracle.model.VPDPolicy;
 import ma.fstt.springoracle.repository.AuditConfigRepository;
 import ma.fstt.springoracle.repository.TDEConfigRepository;
 import ma.fstt.springoracle.repository.VPDPolicyRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -138,23 +140,67 @@ public class OracleSecurityServiceImpl implements OracleSecurityService {
         }
 
         try {
-            String dropPolicySql = String.format(
-                    "BEGIN DBMS_RLS.DROP_POLICY(" +
-                            "object_schema => USER, " +
-                            "object_name => '%s', " +
-                            "policy_name => '%s'); END;",
-                    policy.getTableName(),
-                    policy.getPolicyName()
+            // First check if the policy exists in the database
+            String checkPolicySQL = """
+            SELECT COUNT(*) 
+            FROM ALL_POLICIES 
+            WHERE OBJECT_OWNER = USER 
+            AND OBJECT_NAME = ? 
+            AND POLICY_NAME = ?
+        """;
+
+            int policyCount = jdbcTemplate.queryForObject(
+                    checkPolicySQL,
+                    Integer.class,
+                    policy.getTableName().toUpperCase(),
+                    policy.getPolicyName().toUpperCase()
             );
-            jdbcTemplate.execute(dropPolicySql);
 
-            String dropFunctionSql = String.format("DROP FUNCTION %s", policy.getFunctionName());
-            jdbcTemplate.execute(dropFunctionSql);
+            // Only attempt to drop the policy if it exists in the database
+            if (policyCount > 0) {
+                String dropPolicySql = """
+                BEGIN 
+                    DBMS_RLS.DROP_POLICY(
+                        object_schema => USER, 
+                        object_name => ?, 
+                        policy_name => ?
+                    ); 
+                END;
+            """;
+                jdbcTemplate.execute(
+                        dropPolicySql,
+                        (PreparedStatement ps) -> {
+                            ps.setString(1, policy.getTableName().toUpperCase());
+                            ps.setString(2, policy.getPolicyName().toUpperCase());
+                            return ps;
+                        }
+                );
+            }
 
-            policy.setActive(false);
-            vpdPolicyRepository.save(policy);
+            // Check if the function exists before trying to drop it
+            String checkFunctionSQL = """
+            SELECT COUNT(*) 
+            FROM USER_PROCEDURES 
+            WHERE OBJECT_TYPE = 'FUNCTION' 
+            AND OBJECT_NAME = ?
+        """;
+
+            int functionCount = jdbcTemplate.queryForObject(
+                    checkFunctionSQL,
+                    Integer.class,
+                    policy.getFunctionName().toUpperCase()
+            );
+
+            if (functionCount > 0) {
+                String dropFunctionSql = "DROP FUNCTION " + policy.getFunctionName();
+                jdbcTemplate.execute(dropFunctionSql);
+            }
+
+            // Delete the policy from the application database instead of just marking it inactive
+            vpdPolicyRepository.delete(policy);
+
         } catch (Exception e) {
-            throw new VPDConfigurationException("Failed to drop VPD policy", e);
+            throw new VPDConfigurationException("Failed to drop VPD policy: " + e.getMessage(), e);
         }
     }
 
@@ -192,12 +238,69 @@ public class OracleSecurityServiceImpl implements OracleSecurityService {
         }
 
         try {
-            String sql = String.format("NOAUDIT ALL ON %s", tableName);
-            jdbcTemplate.execute(sql);
+            // First, verify the table exists and get its owner
+            String checkTableSQL = """
+            SELECT OWNER 
+            FROM ALL_TABLES 
+            WHERE TABLE_NAME = ?
+        """;
 
+            String tableOwner = jdbcTemplate.queryForObject(
+                    checkTableSQL,
+                    String.class,
+                    tableName.toUpperCase()
+            );
+
+            if (tableOwner == null) {
+                throw new AuditConfigurationException("Table " + tableName + " not found");
+            }
+
+            // Build the fully qualified table name
+            String qualifiedTableName = tableOwner + "." + tableName;
+
+            // Disable different types of auditing based on the configuration
+            if (config.isAuditSuccessful()) {
+                String noAuditSuccessSQL = """
+                BEGIN
+                    EXECUTE IMMEDIATE 'NOAUDIT SELECT, INSERT, UPDATE, DELETE ON %s WHENEVER SUCCESSFUL';
+                END;
+            """.formatted(qualifiedTableName);
+                jdbcTemplate.execute(noAuditSuccessSQL);
+            }
+
+            if (config.isAuditFailed()) {
+                String noAuditFailureSQL = """
+                BEGIN
+                    EXECUTE IMMEDIATE 'NOAUDIT SELECT, INSERT, UPDATE, DELETE ON %s WHENEVER NOT SUCCESSFUL';
+                END;
+            """.formatted(qualifiedTableName);
+                jdbcTemplate.execute(noAuditFailureSQL);
+            }
+
+            // If specific audit level was set, disable those operations
+            if (config.getAuditLevel() != null && !config.getAuditLevel().isEmpty()) {
+                String[] operations = config.getAuditLevel().split(",");
+                for (String operation : operations) {
+                    String noAuditOperationSQL = """
+                    BEGIN
+                        EXECUTE IMMEDIATE 'NOAUDIT %s ON %s';
+                    END;
+                """.formatted(operation.trim(), qualifiedTableName);
+                    jdbcTemplate.execute(noAuditOperationSQL);
+                }
+            }
+
+            // Clean up the audit configuration from our repository
             auditConfigRepository.delete(config);
-        } catch (Exception e) {
-            throw new AuditConfigurationException("Failed to disable auditing", e);
+
+        } catch (DataAccessException e) {
+            throw new AuditConfigurationException(
+                    String.format("Failed to disable auditing on table %s: %s",
+                            tableName,
+                            e.getMostSpecificCause().getMessage()
+                    ),
+                    e
+            );
         }
     }
 

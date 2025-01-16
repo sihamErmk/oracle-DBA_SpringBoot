@@ -81,21 +81,23 @@ public class PerformanceOptimizationServiceImpl implements PerformanceOptimizati
         String taskName = "TUNE_" + sqlId;
         try {
             // Create tuning task with proper bind variables
-            String createTask = """
-                DECLARE
-                  v_sql_id VARCHAR2(13);
-                  v_task_name VARCHAR2(30);
-                BEGIN
-                  v_sql_id := ?;
-                  v_task_name := ?;
-                  DBMS_SQLTUNE.CREATE_TUNING_TASK(
-                    sql_id => v_sql_id,
-                    task_name => v_task_name,
-                    time_limit => 3600
-                  );
-                END;
-            """;
-            jdbcTemplate.update(createTask, sqlId, taskName);
+            String sql = """
+    DECLARE
+        v_sql_id VARCHAR2(13);
+        v_task_name VARCHAR2(30);
+    BEGIN
+        v_sql_id := ?;
+        v_task_name := ?;
+        DBMS_SQLTUNE.CREATE_TUNING_TASK(
+            sql_id => v_sql_id,
+            task_name => v_task_name,
+            time_limit => 3600
+        );
+    END;
+""";
+
+            jdbcTemplate.update(sql, sqlId, taskName);
+
 
             // Execute the tuning task
             String executeTask = """
@@ -137,7 +139,7 @@ public class PerformanceOptimizationServiceImpl implements PerformanceOptimizati
     public void gatherTableStats(String schemaName, String tableName) {
         // First verify the table exists
         String verifySQL = "SELECT COUNT(*) FROM all_tables WHERE owner = ? AND table_name = ?";
-        int tableExists = jdbcTemplate.queryForObject(verifySQL, Integer.class, schemaName, tableName);
+        int tableExists = jdbcTemplate.queryForObject(verifySQL, Integer.class, schemaName.toUpperCase(), tableName.toUpperCase());
 
         if (tableExists == 0) {
             throw new RuntimeException("Table " + schemaName + "." + tableName + " does not exist");
