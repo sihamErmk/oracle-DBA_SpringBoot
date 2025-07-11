@@ -1,18 +1,65 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: Oracle SpringBoot CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
-  Explore-GitHub-Actions:
+  test:
     runs-on: ubuntu-latest
+    
+    services:
+      oracle:
+        image: gvenzl/oracle-free:23-slim
+        env:
+          ORACLE_PASSWORD: oracle
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd="sqlplus -s sys/oracle@//localhost:1521/FREE as sysdba <<< 'SELECT 1 FROM DUAL;'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Wait for Oracle to be ready
+      run: |
+        timeout 300 bash -c 'until nc -z localhost 1521; do sleep 5; done'
+    
+    - name: Run tests
+      run: |
+        cd spring-oracle
+        mvn clean test
+      env:
+        SPRING_DATASOURCE_URL: jdbc:oracle:thin:@//localhost:1521/FREE
+        SPRING_DATASOURCE_USERNAME: system
+        SPRING_DATASOURCE_PASSWORD: oracle
+    
+    - name: Build application
+      run: |
+        cd spring-oracle
+        mvn clean package -DskipTests
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: spring-oracle/target/surefire-reports/
