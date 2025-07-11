@@ -1,0 +1,69 @@
+# Spring Boot Application Deployment - Local
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-app
+  namespace: oracle-spring-app
+spec:
+  # Single replica for local development
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-app
+  template:
+    metadata:
+      labels:
+        app: spring-app
+    spec:
+      containers:
+      - name: spring-app
+        # Use local Docker image (build with: docker build -t spring-oracle:local .)
+        image: spring-oracle:local
+        imagePullPolicy: Never  # Use local image
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:oracle:thin:@//oracle-service:1521/FREE"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "system"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "oracle"
+        - name: SPRING_PROFILES_ACTIVE
+          value: "test"
+        # Reduced resources for local
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        # Simple health checks
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+---
+# Service to expose Spring app locally
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-app-service
+  namespace: oracle-spring-app
+spec:
+  selector:
+    app: spring-app
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080  # Access via localhost:30080
+  type: NodePort

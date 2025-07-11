@@ -1,0 +1,58 @@
+# Oracle Database Deployment - Local
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle-db
+  namespace: oracle-spring-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oracle-db
+  template:
+    metadata:
+      labels:
+        app: oracle-db
+    spec:
+      containers:
+      - name: oracle
+        image: gvenzl/oracle-free:23-slim
+        ports:
+        - containerPort: 1521
+        env:
+        - name: ORACLE_PASSWORD
+          value: "oracle"  # Direct value for local development
+        # Reduced resources for local development
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        # Simplified health check
+        livenessProbe:
+          tcpSocket:
+            port: 1521
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 1521
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+# Service to expose Oracle database
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracle-service
+  namespace: oracle-spring-app
+spec:
+  selector:
+    app: oracle-db
+  ports:
+  - port: 1521
+    targetPort: 1521
+    nodePort: 31521  # External access for local development
+  type: NodePort

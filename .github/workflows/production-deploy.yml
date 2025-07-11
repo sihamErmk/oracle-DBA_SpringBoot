@@ -107,8 +107,26 @@ jobs:
     environment: production
     
     steps:
-    - name: Deploy to production
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+    
+    - name: Update kubeconfig
       run: |
-        echo "Deploying to production server..."
-        # Add your deployment commands here
-        # Example: kubectl apply -f k8s/ or docker-compose up -d
+        aws eks update-kubeconfig --region us-west-2 --name oracle-spring-cluster
+    
+    - name: Deploy to Kubernetes
+      run: |
+        # Apply all Kubernetes manifests
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/spring-app -n oracle-spring-app
+        
+        # Get service URL
+        kubectl get service spring-app-service -n oracle-spring-app

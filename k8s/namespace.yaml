@@ -1,0 +1,8 @@
+# Creates a separate namespace for our application
+# Namespaces isolate resources and provide organization
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: oracle-spring-app
+  labels:
+    name: oracle-spring-app

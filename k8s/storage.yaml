@@ -1,0 +1,12 @@
+# Persistent Volume Claim for local Oracle storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oracle-pvc
+  namespace: oracle-spring-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi  # Reduced storage for local development
