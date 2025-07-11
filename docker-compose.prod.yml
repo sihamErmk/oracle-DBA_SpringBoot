@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-free:23-slim
+    environment:
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "sqlplus", "-s", "sys/${ORACLE_PASSWORD}@//localhost:1521/FREE", "as", "sysdba", "<<<", "SELECT 1 FROM DUAL;"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  spring-app:
+    image: ghcr.io/${GITHUB_REPOSITORY}:main
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@//oracle-db:1521/FREE
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+
+volumes:
+  oracle_data:

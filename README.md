@@ -12,14 +12,6 @@ A comprehensive database management system integrating Oracle Database, Spring B
 
 ## Technical Architecture
 
-### Frontend (Angular)
-- Server-side rendering for optimal performance
-- Responsive dashboard with real-time updates using Ngcharts
-- Interactive data visualization components with Tailwind CSS
-- Secure authentication and authorization 
-- Form validation 
-- Type-safe development with TypeScript
-
 ### Backend (Spring Boot)
 - RESTful API endpoints with OpenAPI documentation
 - Database transaction management with JPA/Hibernate
@@ -37,42 +29,49 @@ A comprehensive database management system integrating Oracle Database, Spring B
 
 ## Prerequisites
 
-- Angular 18+
 - Java 17+
 - Oracle Database 23ai
 - Maven 3.8+
+- Docker (optional, for Oracle container)
 
 ## Getting Started
 
-
-
 1. Configure Oracle Database:
-    - Create a new database schema
-    - Update `application.properties` with your database credentials
+   - Install Oracle Database 23ai or use Docker: `docker run -d -p 1521:1521 gvenzl/oracle-free:23-slim`
+   - Update `application.properties` with your database credentials
 
 2. Start Spring Boot backend:
    ```bash
-   cd backend
+   cd spring-oracle
    mvn spring-boot:run
    ```
 
-3. Install frontend dependencies and start Angular:
-   ```bash
-   cd frontend
-   npm install
-   ng serve
-   ```
+3. Access the application at `http://localhost:8080`
 
-4. Access the application at `http://localhost:4200`
+## Testing
+
+Run integration tests with Oracle database:
+```bash
+cd spring-oracle
+mvn test
+```
+
+## CI/CD Pipeline
+
+The project includes GitHub Actions workflow that:
+- Sets up Oracle Database service
+- Runs integration tests
+- Builds the application
+- Uploads test artifacts
 
 ## Environment Variables
 
-Create a `.env` file in the frontend directory:
+For production, set these environment variables:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8080
-NEXTAUTH_URL=http://localhost:4200
-NEXTAUTH_SECRET=your-secret-key
+SPRING_DATASOURCE_URL=jdbc:oracle:thin:@//your-host:1521/your-service
+SPRING_DATASOURCE_USERNAME=your-username
+SPRING_DATASOURCE_PASSWORD=your-password
 ```
 
 ## API Documentation
